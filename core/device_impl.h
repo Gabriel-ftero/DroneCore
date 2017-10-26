@@ -93,6 +93,10 @@ public:
 
     bool is_connected() const;
 
+    // This allows a plugin to lock and unlock all mavlink communication.
+    void lock_communication();
+    void unlock_communication();
+
     // Non-copyable
     DeviceImpl(const DeviceImpl &) = delete;
     const DeviceImpl &operator=(const DeviceImpl &) = delete;
@@ -163,6 +167,8 @@ private:
 
     TimeoutHandler _timeout_handler {};
     CallEveryHandler _call_every_handler {};
+
+    std::atomic<bool> _communication_locked {false};
 };
 
 
