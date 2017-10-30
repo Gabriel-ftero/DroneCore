@@ -94,6 +94,8 @@ public:
     bool is_connected() const;
 
     // This allows a plugin to lock and unlock all mavlink communication.
+    // The functionality is currently not used by a plugin included here
+    // but nevertheless there for other plugins that can be added from external.
     void lock_communication();
     void unlock_communication();
 
