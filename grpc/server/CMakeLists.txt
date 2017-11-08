@@ -68,6 +68,8 @@ target_link_libraries(dronecore_server
     dl
 )
 
+include(autogenerate_plugin_container.cmake)
+
 include_directories(
     ${Protobuf_INCLUDE_DIRS}
     ${GRPC_INCLUDE_DIRS}
