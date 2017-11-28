@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 set(CMAKE_INSTALL_PREFIX "../install" CACHE PATH "default cache path")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 project(dronecore)
 
@@ -76,6 +77,10 @@ endif()
 
 if (ANDROID)
     add_definitions(-frtti)
+    # Workaround for a plugin where the __androidx86__ is necessary.
+    if (ANDROID_ABI STREQUAL "x86")
+        add_definitions(-D__androidx86__)
+    endif()
 endif()
 
 # Add definition for __FILENAME__ so we don't need to use __FILE__ because it also
@@ -101,6 +106,10 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/core
     SYSTEM ${EXTERNAL_DIR}/${additional_includes}
 )
+
+if (DEFINED additional_includes AND NOT additional_includes STREQUAL "")
+    message(STATUS "Additional includes: ${additional_includes}")
+endif()
 
 if (ANDROID)
     include_directories(curl-android-ios/prebuilt-with-ssl/android/include)
@@ -151,6 +160,11 @@ target_link_libraries(dronecore
     ${curl_lib}
     tinyxml2
 )
+if (MSVC)
+    target_link_libraries(dronecore
+        ws2_32
+    )
+endif()
 
 # cmake should check for C++11
 set_property(TARGET dronecore PROPERTY CXX_STANDARD 11)
@@ -288,9 +302,8 @@ if(NOT IOS AND NOT ANDROID)
     set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
     set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
 
-    # We try to find gRPC. If we find it we try to include it in the build.
-    include(grpc/FindGRPC.cmake)
-    if(GRPC_LIBRARIES)
+    find_package(GRPC)
+    if(GRPC_FOUND)
 
         # If protobuf is installed to e.g. /opt/protobuf, you need to specifiy this via environment variable:
         # `export PROTOBUF_DIR=/opt/protobuf`
@@ -300,10 +313,11 @@ if(NOT IOS AND NOT ANDROID)
             set(Protobuf_INCLUDE_DIRS "$ENV{PROTOBUF_DIR}/include")
             set(Protobuf_PROTOC_EXECUTABLE "$ENV{PROTOBUF_DIR}/bin/protoc")
             set(Protobuf_PROTOC_LIBRARY_DIR "$ENV{PROTOBUF_DIR}/lib")
-            set(Protobuf_PROTOC_LIBRARIES "$ENV{PROTOBUF_DIR}/lib/libprotobuf.so")
+            set(Protobuf_PROTOC_LIBRARIES "$ENV{PROTOBUF_DIR}/lib/libprotoc.so")
+            set(Protobuf_LIBRARIES "$ENV{PROTOBUF_DIR}/lib/libprotobuf.so")
         else()
             message(STATUS "PROTOBUF_DIR not set, checking automatically for Protobuf")
-            include(FindProtobuf REQUIRED)
+            find_package(Protobuf REQUIRED)
         endif()
 
         add_subdirectory(grpc/server)

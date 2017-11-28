@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-#project(grpcdronecore)
-
-
 add_definitions(
     -std=c++11
     -Wno-unused-parameter
@@ -11,7 +8,8 @@ add_definitions(
 
 set(proto_dir ${CMAKE_SOURCE_DIR}/grpc/proto)
 set(plugins_dir ${CMAKE_SOURCE_DIR}/grpc/server/plugins/)
-set(plugins_list action mission telemetry)
+
+file(STRINGS ../proto/plugins.conf plugins_list)
 
 add_custom_command(OUTPUT dronecore.grpc.pb.cc
     COMMAND ${Protobuf_PROTOC_EXECUTABLE}
@@ -28,7 +26,6 @@ add_custom_command(OUTPUT dronecore.pb.cc
         --cpp_out=. ${proto_dir}/dronecore.proto
     DEPENDS ${proto_dir}/dronecore.proto
 )
-
 
 foreach(plugin ${plugins_list})
     add_custom_command(OUTPUT ${plugin}.grpc.pb.cc
@@ -62,9 +59,8 @@ add_executable(dronecore_server ${plugins_src})
 
 target_link_libraries(dronecore_server
     dronecore
-    ${Protobuf_PROTOC_LIBRARIES}
+    ${Protobuf_LIBRARIES}
     ${GRPC_LIBRARIES}
-    #grpc++_reflection
     dl
 )
 

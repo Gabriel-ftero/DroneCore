@@ -119,7 +119,13 @@ set(PLUGIN_LIST_APPEND_STRING "")
 # Go through all the plugins and generate the strings.
 foreach(class_name ${plugin_class_names})
 
-    string(TOLOWER ${class_name} class_name_lowercase)
+    # We want to go from CamelCase to snake_case.
+    # CamelCase -> Camel_Case
+    string(REGEX REPLACE "(.)([A-Z][a-z]+)" "\\1_\\2" class_name_with_underscores "${class_name}")
+    # Camel0Case -> Camel0_Case
+    string(REGEX REPLACE "([a-z0-9])([A-Z])" "\\1_\\2" class_name_with_underscores "${class_name_with_underscores}")
+    # Camel_Case to snake_case
+    string(TOLOWER ${class_name_with_underscores} class_name_lowercase)
 
     set(get_name ${class_name_lowercase})
     set(member_name "_${class_name_lowercase}")
@@ -143,11 +149,11 @@ foreach(class_name ${plugin_class_names})
         "${PLUGIN_GET_STRING}    ${class_name} &${get_name}() { return ${member_name}; }\n\n")
 
     set(PLUGIN_MEMBER_STRING
-        "${PLUGIN_MEMBER_STRING}    /** @private */\n")
+        "${PLUGIN_MEMBER_STRING}    /** @private internal use only.*/\n")
     set(PLUGIN_MEMBER_STRING
         "${PLUGIN_MEMBER_STRING}    ${impl_class_name} *${impl_member_name};\n")
     set(PLUGIN_MEMBER_STRING
-        "${PLUGIN_MEMBER_STRING}    /** @private */\n")
+        "${PLUGIN_MEMBER_STRING}    /** @private internal use only.*/\n")
     set(PLUGIN_MEMBER_STRING
         "${PLUGIN_MEMBER_STRING}    ${class_name} ${member_name};\n")
 
