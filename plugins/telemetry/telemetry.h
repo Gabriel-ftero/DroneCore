@@ -76,6 +76,31 @@ public:
     };
 
     /**
+      *@brief control system state
+      * acceleration in body frame
+      * velocities in body frame
+      */
+    struct ControlSystemState{
+        uint64_t timestamp;
+        float x_acc_body;
+        float y_acc_body;
+        float z_acc_body;
+        float x_vel_body;
+        float y_vel_body;
+        float z_vel_body;
+        float x_pos_local;
+        float y_pos_local;
+        float z_pos_local;
+        float airspeed;
+        float vel_variance[3];
+        float pos_variance[3];
+        float q[4];
+        float roll_rate;
+        float pitch_rate;
+        float yaw_rate;
+    };
+
+    /**
      * @brief GPS information type.
      */
     struct GPSInfo {
@@ -213,6 +238,14 @@ public:
     Result set_rate_ground_speed_ned(double rate_hz);
 
     /**
+     * @brief Set rate of control state (synchronous).
+     *
+     * @param rate_hz Rate in Hz.
+     * @return Result of request.
+     */
+    Result set_rate_control_system_state(double rate_hz);
+
+    /**
      * @brief Set rate of GPS information updates (synchronous).
      *
      * @param rate_hz Rate in Hz.
@@ -283,6 +316,14 @@ public:
      * @param callback Callback to receive request result.
      */
     void set_rate_ground_speed_ned_async(double rate_hz, result_callback_t callback);
+
+    /**
+     * @brief Set rate of control system states (asynchronous).
+     *
+     * @param rate_hz Rate in Hz.
+     * @param callback Callback to receive request result.
+     */
+    //void set_rate_control_system_state_async(double rate_hz, result_callback_t callback);
 
     /**
      * @brief Set rate of GPS information updates (asynchronous).
@@ -370,6 +411,13 @@ public:
      * @return Ground speed in NED.
      */
     GroundSpeedNED ground_speed_ned() const;
+
+    /**
+     * @brief Get the current control system state (synchronous).
+    *
+    * @return Control system state information.
+    */
+   ControlSystemState control_system_state() const;
 
     /**
      * @brief Get the current GPS information (synchronous).
@@ -515,6 +563,22 @@ public:
      * @param callback Function to call with updates.
      */
     void ground_speed_ned_async(ground_speed_ned_callback_t callback);
+
+    /**
+     * @brief Callback type for control system state updateds.
+     *
+     * @param control_system_state
+     */
+    typedef std::function<void(ControlSystemState control_system_state)> control_system_state_callback_t;
+
+    /*
+     *
+     * @brief Subscribe to ground speed (NED) updates (asynchronous).
+     *
+     * @param callback Function to call with updates.
+
+    void ground_speed_ned_async(ground_speed_ned_callback_t callback);
+    */
 
     /**
      * @brief Callback type for GPS information updates.

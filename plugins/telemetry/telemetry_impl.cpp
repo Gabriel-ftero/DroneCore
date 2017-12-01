@@ -21,6 +21,8 @@ TelemetryImpl::TelemetryImpl() :
     _camera_attitude_euler_angle(Telemetry::EulerAngle {NAN, NAN, NAN}),
     _ground_speed_ned_mutex(),
     _ground_speed_ned(Telemetry::GroundSpeedNED {NAN, NAN, NAN}),
+    _control_system_state_mutex(),
+    _control_system_state(Telemetry::ControlSystemState {uint64_t(NAN), NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN, {NAN, NAN, NAN}, {NAN, NAN, NAN}, {NAN, NAN, NAN, NAN}, NAN, NAN, NAN}),
     _gps_info_mutex(),
     _gps_info(Telemetry::GPSInfo {0, 0}),
     _battery_mutex(),
@@ -46,6 +48,7 @@ TelemetryImpl::TelemetryImpl() :
     _health_subscription(nullptr),
     _health_all_ok_subscription(nullptr),
     _rc_status_subscription(nullptr),
+    _control_system_state_subscription(nullptr),
     _ground_speed_ned_rate_hz(0.0),
     _position_rate_hz(0.0)
 {
@@ -94,6 +97,10 @@ void TelemetryImpl::init()
     _parent->register_mavlink_message_handler(
         MAVLINK_MSG_ID_RC_CHANNELS,
         std::bind(&TelemetryImpl::process_rc_channels, this, _1), this);
+
+    _parent->register_mavlink_message_handler(
+        MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE,
+        std::bind(&TelemetryImpl::process_control_system_state, this, _1),this);
 
     _parent->register_timeout_handler(
         std::bind(&TelemetryImpl::receive_rc_channels_timeout, this), 1.0, &_timeout_cookie);
@@ -194,6 +201,12 @@ Telemetry::Result TelemetryImpl::set_rate_rc_status(double rate_hz)
 {
     return telemetry_result_from_command_result(
                _parent->set_msg_rate(MAVLINK_MSG_ID_RC_CHANNELS, rate_hz));
+}
+
+Telemetry::Result TelemetryImpl::set_rate_control_system_state(double rate_hz)
+{
+    return telemetry_result_from_command_result(
+               _parent->set_msg_rate(MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE, rate_hz));
 }
 
 void TelemetryImpl::set_rate_position_async(double rate_hz, Telemetry::result_callback_t callback)
@@ -346,6 +359,35 @@ void TelemetryImpl::process_home_position(const mavlink_message_t &message)
     if (_home_position_subscription) {
         _home_position_subscription(get_home_position());
     }
+}
+
+void TelemetryImpl::process_control_system_state(const mavlink_message_t &message)
+{
+        mavlink_control_system_state_t control_system_state;
+        mavlink_msg_control_system_state_decode(&message, &control_system_state);
+        Telemetry::ControlSystemState sys_ctrl_state{uint64_t(0.0),
+                                                                control_system_state.x_acc,
+                                                                control_system_state.y_acc,
+                                                                control_system_state.z_acc,
+                                                                control_system_state.x_vel,
+                                                                control_system_state.y_vel,
+                                                                control_system_state.z_vel,
+                                                                NAN,
+                                                                NAN,
+                                                                NAN,
+                                                                control_system_state.airspeed,
+                                                                {NAN, NAN, NAN},
+                                                                {NAN ,NAN, NAN},
+                                                                {NAN, NAN, NAN, NAN},
+                                                                control_system_state.roll_rate,
+                                                                control_system_state.pitch_rate,
+                                                                control_system_state.yaw_rate
+                                                               };
+
+        set_control_system_state(sys_ctrl_state);
+       if (_control_system_state_subscription) {
+            _control_system_state_subscription(get_control_system_state());
+      }
 }
 
 void TelemetryImpl::process_attitude_quaternion(const mavlink_message_t &message)
@@ -669,6 +711,19 @@ void TelemetryImpl::set_ground_speed_ned(Telemetry::GroundSpeedNED ground_speed_
 {
     std::lock_guard<std::mutex> lock(_ground_speed_ned_mutex);
     _ground_speed_ned = ground_speed_ned;
+}
+
+Telemetry::ControlSystemState TelemetryImpl::get_control_system_state() const
+{
+    std::lock_guard<std::mutex> lock(_control_system_state_mutex);
+    return _control_system_state;
+}
+
+void TelemetryImpl::set_control_system_state(Telemetry::ControlSystemState control_system_state)
+{
+    std::lock_guard<std::mutex> lock(_control_system_state_mutex);
+    _control_system_state =control_system_state;
+
 }
 
 Telemetry::GPSInfo TelemetryImpl::get_gps_info() const

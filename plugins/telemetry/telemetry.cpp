@@ -42,6 +42,11 @@ Telemetry::Result Telemetry::set_rate_ground_speed_ned(double rate_hz)
     return _impl->set_rate_ground_speed_ned(rate_hz);
 }
 
+Telemetry::Result Telemetry::set_rate_control_system_state(double rate_hz)
+{
+        return _impl->set_rate_control_system_state(rate_hz);
+}
+
 Telemetry::Result Telemetry::set_rate_gps_info(double rate_hz)
 {
     return _impl->set_rate_gps_info(rate_hz);
@@ -144,6 +149,11 @@ Telemetry::EulerAngle Telemetry::camera_attitude_euler_angle() const
 Telemetry::GroundSpeedNED Telemetry::ground_speed_ned() const
 {
     return _impl->get_ground_speed_ned();
+}
+
+Telemetry::ControlSystemState Telemetry::control_system_state() const
+{
+        return _impl->get_control_system_state();
 }
 
 Telemetry::GPSInfo Telemetry::gps_info() const

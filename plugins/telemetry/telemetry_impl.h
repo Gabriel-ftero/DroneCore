@@ -33,6 +33,7 @@ public:
     Telemetry::Result set_rate_gps_info(double rate_hz);
     Telemetry::Result set_rate_battery(double rate_hz);
     Telemetry::Result set_rate_rc_status(double rate_hz);
+    Telemetry::Result set_rate_control_system_state(double rate_hz);
 
     void set_rate_position_async(double rate_hz, Telemetry::result_callback_t callback);
     void set_rate_home_position_async(double rate_hz, Telemetry::result_callback_t callback);
@@ -43,6 +44,7 @@ public:
     void set_rate_gps_info_async(double rate_hz, Telemetry::result_callback_t callback);
     void set_rate_battery_async(double rate_hz, Telemetry::result_callback_t callback);
     void set_rate_rc_status_async(double rate_hz, Telemetry::result_callback_t callback);
+    //void set_rate_control_system_state_async(double rate_hz, Telemetry::result_callback_t callback);
 
     Telemetry::Position get_position() const;
     Telemetry::Position get_home_position() const;
@@ -59,6 +61,7 @@ public:
     Telemetry::Health get_health() const;
     bool get_health_all_ok() const;
     Telemetry::RCStatus get_rc_status() const;
+    Telemetry::ControlSystemState get_control_system_state() const;
 
     void position_async(Telemetry::position_callback_t &callback);
     void home_position_async(Telemetry::position_callback_t &callback);
@@ -75,6 +78,8 @@ public:
     void health_async(Telemetry::health_callback_t &callback);
     void health_all_ok_async(Telemetry::health_all_ok_callback_t &callback);
     void rc_status_async(Telemetry::rc_status_callback_t &callback);
+    //void control_system_state_async(Telemetry:: &callback);
+
 
 private:
     void set_position(Telemetry::Position position);
@@ -95,6 +100,7 @@ private:
     void set_health_magnetometer_calibration(bool ok);
     void set_health_level_calibration(bool ok);
     void set_rc_status(bool available, float signal_strength_percent);
+    void set_control_system_state(Telemetry::ControlSystemState control_system_state);
 
     void process_global_position_int(const mavlink_message_t &message);
     void process_home_position(const mavlink_message_t &message);
@@ -105,6 +111,7 @@ private:
     void process_sys_status(const mavlink_message_t &message);
     void process_heartbeat(const mavlink_message_t &message);
     void process_rc_channels(const mavlink_message_t &message);
+    void process_control_system_state(const mavlink_message_t &message);
 
     void receive_param_cal_gyro(bool success, int value);
     void receive_param_cal_accel(bool success, int value);
@@ -146,6 +153,9 @@ private:
     mutable std::mutex _ground_speed_ned_mutex;
     Telemetry::GroundSpeedNED _ground_speed_ned;
 
+    mutable std::mutex _control_system_state_mutex;
+    Telemetry::ControlSystemState _control_system_state;
+
     mutable std::mutex _gps_info_mutex;
     Telemetry::GPSInfo _gps_info;
 
@@ -176,6 +186,7 @@ private:
     Telemetry::health_callback_t _health_subscription;
     Telemetry::health_all_ok_callback_t _health_all_ok_subscription;
     Telemetry::rc_status_callback_t _rc_status_subscription;
+    Telemetry::control_system_state_callback_t _control_system_state_subscription;
 
     // The ground speed and position are coupled to the same message, therefore, we just use
     // the faster between the two.
