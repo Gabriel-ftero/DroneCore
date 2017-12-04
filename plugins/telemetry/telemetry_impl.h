@@ -44,7 +44,7 @@ public:
     void set_rate_gps_info_async(double rate_hz, Telemetry::result_callback_t callback);
     void set_rate_battery_async(double rate_hz, Telemetry::result_callback_t callback);
     void set_rate_rc_status_async(double rate_hz, Telemetry::result_callback_t callback);
-    //void set_rate_control_system_state_async(double rate_hz, Telemetry::result_callback_t callback);
+    void set_rate_control_system_state_async(double rate_hz, Telemetry::result_callback_t callback);
 
     Telemetry::Position get_position() const;
     Telemetry::Position get_home_position() const;
@@ -78,7 +78,7 @@ public:
     void health_async(Telemetry::health_callback_t &callback);
     void health_all_ok_async(Telemetry::health_all_ok_callback_t &callback);
     void rc_status_async(Telemetry::rc_status_callback_t &callback);
-    //void control_system_state_async(Telemetry:: &callback);
+    void control_system_state_async(Telemetry::control_system_state_callback_t &callback);
 
 
 private:

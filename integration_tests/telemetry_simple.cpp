@@ -90,9 +90,11 @@ TEST_F(SitlTest, TelemetrySimple)
         std::cout << "Battery voltage: " << battery.voltage_v << " v, "
                   << "remaining: " << battery.remaining_percent * 100.0f << " %" << std::endl;
 
-        const Telemetry::ControlSystemState &ctrl_sys_state=device.telemetry().control_system_state();
-        std::cout << "Velocities in body x: "<< ctrl_sys_state.x_vel_body <<" y: " << ctrl_sys_state.y_vel_body << " z: " << ctrl_sys_state.z_vel_body;
-        std::cout << "Accelerations in body x: "<<ctrl_sys_state.x_acc_body <<" in body y: " <<ctrl_sys_state.y_acc_body <<" in body z: " << ctrl_sys_state.z_acc_body;
+        const Telemetry::ControlSystemState &ctrl_sys_state = device.telemetry().control_system_state();
+        std::cout << "Velocities in body x: " << ctrl_sys_state.x_vel_body << " y: " <<
+                  ctrl_sys_state.y_vel_body << " z: " << ctrl_sys_state.z_vel_body;
+        std::cout << "Accelerations in body x: " << ctrl_sys_state.x_acc_body << " in body y: " <<
+                  ctrl_sys_state.y_acc_body << " in body z: " << ctrl_sys_state.z_acc_body;
         std::cout << "Quaternion: ("
                   << ctrl_sys_state.q[1] << std::endl;
 

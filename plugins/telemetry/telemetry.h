@@ -80,7 +80,7 @@ public:
       * acceleration in body frame
       * velocities in body frame
       */
-    struct ControlSystemState{
+    struct ControlSystemState {
         uint64_t timestamp;
         float x_acc_body;
         float y_acc_body;
@@ -323,7 +323,7 @@ public:
      * @param rate_hz Rate in Hz.
      * @param callback Callback to receive request result.
      */
-    //void set_rate_control_system_state_async(double rate_hz, result_callback_t callback);
+    void set_rate_control_system_state_async(double rate_hz, result_callback_t callback);
 
     /**
      * @brief Set rate of GPS information updates (asynchronous).
@@ -417,7 +417,7 @@ public:
     *
     * @return Control system state information.
     */
-   ControlSystemState control_system_state() const;
+    ControlSystemState control_system_state() const;
 
     /**
      * @brief Get the current GPS information (synchronous).
@@ -569,16 +569,15 @@ public:
      *
      * @param control_system_state
      */
-    typedef std::function<void(ControlSystemState control_system_state)> control_system_state_callback_t;
+    typedef std::function<void(ControlSystemState control_system_state)>
+    control_system_state_callback_t;
 
-    /*
-     *
-     * @brief Subscribe to ground speed (NED) updates (asynchronous).
-     *
-     * @param callback Function to call with updates.
-
-    void ground_speed_ned_async(ground_speed_ned_callback_t callback);
+    /**
+    * @brief Subscribe to control system state updates (asynchronous).
+    *
+    * @param callback Function to call with updates.
     */
+    void control_system_state_async(control_system_state_callback_t callback);
 
     /**
      * @brief Callback type for GPS information updates.

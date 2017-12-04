@@ -44,7 +44,7 @@ Telemetry::Result Telemetry::set_rate_ground_speed_ned(double rate_hz)
 
 Telemetry::Result Telemetry::set_rate_control_system_state(double rate_hz)
 {
-        return _impl->set_rate_control_system_state(rate_hz);
+    return _impl->set_rate_control_system_state(rate_hz);
 }
 
 Telemetry::Result Telemetry::set_rate_gps_info(double rate_hz)
@@ -89,6 +89,11 @@ void Telemetry::set_rate_camera_attitude_async(double rate_hz, result_callback_t
 void Telemetry::set_rate_ground_speed_ned_async(double rate_hz, result_callback_t callback)
 {
     _impl->set_rate_ground_speed_ned_async(rate_hz, callback);
+}
+
+void Telemetry::set_rate_control_system_state_async(double rate_hz, result_callback_t callback)
+{
+    _impl->set_rate_control_system_state_async(rate_hz, callback);
 }
 
 void Telemetry::set_rate_gps_info_async(double rate_hz, result_callback_t callback)
@@ -153,7 +158,7 @@ Telemetry::GroundSpeedNED Telemetry::ground_speed_ned() const
 
 Telemetry::ControlSystemState Telemetry::control_system_state() const
 {
-        return _impl->get_control_system_state();
+    return _impl->get_control_system_state();
 }
 
 Telemetry::GPSInfo Telemetry::gps_info() const
@@ -229,6 +234,11 @@ void Telemetry::camera_attitude_euler_angle_async(attitude_euler_angle_callback_
 void Telemetry::ground_speed_ned_async(ground_speed_ned_callback_t callback)
 {
     return _impl->ground_speed_ned_async(callback);
+}
+
+void Telemetry::control_system_state_async(control_system_state_callback_t callback)
+{
+    return _impl->control_system_state_async(callback);
 }
 
 void Telemetry::gps_info_async(gps_info_callback_t callback)
