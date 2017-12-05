@@ -93,6 +93,10 @@ void TelemetryImpl::init()
     _parent->register_mavlink_message_handler(
         MAVLINK_MSG_ID_RC_CHANNELS,
         std::bind(&TelemetryImpl::process_rc_channels, this, _1), this);
+
+    _parent->register_mavlink_message_handler(
+        MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE,
+        std::bind(&TelemetryImpl::process_control_system_state, this, _1), this);
 }
 
 void TelemetryImpl::deinit()
@@ -103,11 +107,7 @@ void TelemetryImpl::deinit()
 void TelemetryImpl::enable()
 {
 
-    _parent->register_mavlink_message_handler(
-        MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE,
-        std::bind(&TelemetryImpl::process_control_system_state, this, _1), this);
-
-    _parent->register_timeout_handler(
+     _parent->register_timeout_handler(
         std::bind(&TelemetryImpl::receive_rc_channels_timeout, this), 1.0, &_timeout_cookie);
 
     // FIXME: The calibration check should eventually be better than this.
