@@ -33,6 +33,8 @@ TEST_F(SitlTest, TelemetrySimple)
     ASSERT_EQ(result, Telemetry::Result::SUCCESS);
     result = device.telemetry().set_rate_battery(10.0);
     ASSERT_EQ(result, Telemetry::Result::SUCCESS);
+    result = device.telemetry().set_rate_control_system_state(10.0);
+    ASSERT_EQ(result, Telemetry::Result::SUCCESS);
 
     // Print 3s of telemetry.
     for (unsigned i = 0; i < 50; ++i) {
@@ -87,6 +89,15 @@ TEST_F(SitlTest, TelemetrySimple)
         const Telemetry::Battery &battery = device.telemetry().battery();
         std::cout << "Battery voltage: " << battery.voltage_v << " v, "
                   << "remaining: " << battery.remaining_percent * 100.0f << " %" << std::endl;
+
+        const Telemetry::ControlSystemState &ctrl_sys_state = device.telemetry().control_system_state();
+        std::cout << "Velocities in body x: " << ctrl_sys_state.x_vel_body << " y: " <<
+                  ctrl_sys_state.y_vel_body << " z: " << ctrl_sys_state.z_vel_body;
+        std::cout << "Accelerations in body x: " << ctrl_sys_state.x_acc_body << " in body y: " <<
+                  ctrl_sys_state.y_acc_body << " in body z: " << ctrl_sys_state.z_acc_body;
+        std::cout << "Quaternion: ("
+                  << ctrl_sys_state.q[1] << std::endl;
+
 
 
         std::this_thread::sleep_for(std::chrono::milliseconds(30));
