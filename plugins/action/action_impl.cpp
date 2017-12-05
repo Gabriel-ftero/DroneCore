@@ -8,14 +8,9 @@ namespace dronecore {
 
 using namespace std::placeholders; // for `_1`
 
-ActionImpl::ActionImpl()
-{
-}
+ActionImpl::ActionImpl() {}
 
-ActionImpl::~ActionImpl()
-{
-
-}
+ActionImpl::~ActionImpl() {}
 
 void ActionImpl::init()
 {
@@ -23,7 +18,15 @@ void ActionImpl::init()
     _parent->register_mavlink_message_handler(
         MAVLINK_MSG_ID_EXTENDED_SYS_STATE,
         std::bind(&ActionImpl::process_extended_sys_state, this, _1), this);
+}
 
+void ActionImpl::deinit()
+{
+    _parent->unregister_all_mavlink_message_handlers(this);
+}
+
+void ActionImpl::enable()
+{
     // And we need to make sure the system state is actually sent.
     // We use the async call here because we should not block in the init call because
     // we won't receive an answer anyway in init because the receive loop is not
@@ -32,10 +35,7 @@ void ActionImpl::init()
                                 MavlinkCommands::DEFAULT_COMPONENT_ID_AUTOPILOT);
 }
 
-void ActionImpl::deinit()
-{
-    _parent->unregister_all_mavlink_message_handlers(this);
-}
+void ActionImpl::disable() {}
 
 Action::Result ActionImpl::arm() const
 {

@@ -6,14 +6,9 @@
 
 namespace dronecore {
 
-LoggingImpl::LoggingImpl()
-{
-}
+LoggingImpl::LoggingImpl() {}
 
-LoggingImpl::~LoggingImpl()
-{
-
-}
+LoggingImpl::~LoggingImpl() {}
 
 void LoggingImpl::init()
 {
@@ -32,6 +27,10 @@ void LoggingImpl::deinit()
 {
     _parent->unregister_all_mavlink_message_handlers(this);
 }
+
+void LoggingImpl::enable() {}
+
+void LoggingImpl::disable() {}
 
 Logging::Result LoggingImpl::start_logging() const
 {
